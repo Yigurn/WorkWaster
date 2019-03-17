@@ -2,6 +2,7 @@ package com.yigurn.workwaster;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
@@ -21,6 +22,7 @@ public class PennyTimer extends Service {
 
     private long earned;
     public boolean screenOn;
+    private ScreenReceiver mReceiver;
 
     //Run on a separate thread
     private Handler mHandler = new Handler();
@@ -35,6 +37,12 @@ public class PennyTimer extends Service {
     public void onCreate() {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mEditor = mPreferences.edit();
+
+
+        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        mReceiver = new ScreenReceiver();
+        registerReceiver(mReceiver, intentFilter);
 
 
 
