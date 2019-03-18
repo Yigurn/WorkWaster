@@ -1,15 +1,20 @@
 package com.yigurn.workwaster;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
-import java.util.Calendar;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ServiceCallbacks {
+    private PennyTimerService myService;
+    private boolean bound = false;
 
     private long salaryInPence = 29_000_00;
     private int workDays = 260;
@@ -17,9 +22,9 @@ public class MainActivity extends AppCompatActivity {
     private long earned;
     private long pennyTime;
 
-    private long startTime;
-    private long currTimePassed;
-    private long totalTimePassed;
+    public TextView total;
+
+    private SharedPreferences mPreferences;
 
     private static final String TAG = "pigs";
 
@@ -32,15 +37,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.i(TAG,"onCreate()");
-        calcPennyTime();
-
-        startService(new Intent(this, PennyTimer.class));
-
-        SharedPreferences sharedPref= getSharedPreferences("prefs", 0);
-        long earned = sharedPref.getLong("earned", 99);
-
-        TextView total = (TextView)findViewById(R.id.earned);
-        total.setText(earned + " pence");
+        startService(new Intent(this, PennyTimerService.class));
     }
 
     @Override
@@ -52,11 +49,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
        //Log.i(TAG,"onStart()");
+        Intent intent = new Intent(this, PennyTimerService.class);
+        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(TAG,"onResume()");
+        Log.i(TAG,"APP OPEN");
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        earned = mPreferences.getLong("earned", -99);
+        total = (TextView)findViewById(R.id.earned);
+        total.setText(earned + " pence");
     }
     @Override
     protected void onPause() {
@@ -66,20 +69,42 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i(TAG,"onStop()" + startTime);
+        Log.i(TAG,"APP CLOSED");
     }
     @Override
     protected void onDestroy() {
         super.onDestroy();
         //Log.i(TAG,"onDestroy()");
+        if (bound) {
+            myService.setCallbacks(null); // unregister
+            unbindService(serviceConnection);
+            bound = false;
+        }
     }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // cast the IBinder and get MyService instance
+            PennyTimerService.LocalBinder binder = (PennyTimerService.LocalBinder) service;
+            myService = binder.getService();
+            bound = true;
+            myService.setCallbacks(MainActivity.this); // register
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            bound = false;
+        }
+    };
 
     @Override
+    public void doSomething() {
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        earned = mPreferences.getLong("earned", -99);
+        total = (TextView)findViewById(R.id.earned);
+        total.setText(earned + " pence");
 
-    protected void onSaveInstanceState(Bundle state) {
-        super.onSaveInstanceState(state);
-        state.putSerializable("starttime", startTime);
     }
-
-
 }

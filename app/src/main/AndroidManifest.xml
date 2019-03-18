@@ -21,7 +21,7 @@
                 <action android:name="android.intent.action.ACTION_SHUTDOWN" />
             </intent-filter>
         </receiver>
-        <service android:name=".PennyTimer"/>
+        <service android:name=".PennyTimerService"/>
     </application>
 
 </manifest>

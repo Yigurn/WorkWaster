@@ -4,15 +4,36 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class PennyTimer extends Service {
+public class PennyTimerService extends Service {
+
+    private final IBinder binder = new LocalBinder();
+    private ServiceCallbacks serviceCallbacks;
+
+    public class LocalBinder extends Binder {
+        PennyTimerService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return PennyTimerService.this;
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
+
+    public void setCallbacks(ServiceCallbacks callbacks) {
+        serviceCallbacks = callbacks;
+    }
 
     private SharedPreferences mPreferences;
     private SharedPreferences.Editor mEditor;
@@ -22,29 +43,19 @@ public class PennyTimer extends Service {
 
     private long earned;
     public boolean screenOn;
-    private ScreenReceiver mReceiver;
 
     //Run on a separate thread
     private Handler mHandler = new Handler();
     private Timer mTimer = null;
 
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
     public void onCreate() {
         mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mEditor = mPreferences.edit();
-
 
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        mReceiver = new ScreenReceiver();
+        ScreenReceiver mReceiver = new ScreenReceiver();
         registerReceiver(mReceiver, intentFilter);
-
-
 
         //cancel if exists
         if (mTimer != null) {
@@ -53,6 +64,7 @@ public class PennyTimer extends Service {
             mTimer = new Timer();
         }
         mTimer.scheduleAtFixedRate(new PennyTimeTimerTask(), 0, PENNY_INTERVAL);
+
     }
     class PennyTimeTimerTask extends TimerTask {
 
@@ -62,17 +74,20 @@ public class PennyTimer extends Service {
 
                 @Override
                 public void run() {
+                    mEditor = mPreferences.edit();
                     earned = mPreferences.getLong("earned", 0);
                     screenOn = mPreferences.getBoolean("screenOn", true);
                     if (screenOn) {
                         mEditor.putLong("earned", ++earned);
+                        Log.i("pigs","Earned:" + earned);
                     }
-                    //if phone is on
                     //  if 9-5
+                    //      if on app
                     //      drop
-                    mEditor.commit();
-                    Log.i("pigs","Earned:" + earned);
-
+                    mEditor.apply();
+                    if (serviceCallbacks != null) {
+                        serviceCallbacks.doSomething();
+                    }
                 }
             });
         }
