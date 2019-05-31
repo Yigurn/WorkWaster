@@ -7,30 +7,19 @@
     tools:context=".MainActivity"
     android:orientation="vertical"
     android:id="@+id/container">
-<!--
+
     <TextView
-        android:id="@+id/textPointsReal"
+        android:id="@+id/earned"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:layout_above="@+id/imgContainer"
-        android:layout_gravity="center"
-        android:layout_marginBottom="111dp"
-        android:fontFamily="@font/luckiest_guy"
-        android:paddingTop="20dp"
-        android:text="£999"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="32sp" />
--->
-    <TextView
-        android:id="@+id/textEarned"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_above="@+id/imgContainer"
-        android:layout_marginBottom="121dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="128dp"
+        android:layout_marginBottom="43dp"
         android:autoSizeTextType="uniform"
         android:fontFamily="@font/luckiest_guy"
         android:padding="10dp"
-        android:text="£0.00"
+        android:text="£999"
         android:textAlignment="center"
         android:textColor="@color/colorPrimaryDark" />
 
@@ -43,11 +32,9 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_gravity="center"
-        android:layout_marginStart="59dp"
-        android:layout_marginEnd="52dp"
-        android:layout_marginBottom="37dp"
-        android:layout_x="58dp"
-        android:layout_y="215dp"
+        android:layout_marginStart="58dp"
+        android:layout_marginEnd="51dp"
+        android:layout_marginBottom="90dp"
         android:background="@drawable/piggy"
         android:onClick="onClick" />
 
@@ -56,10 +43,26 @@
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_gravity="center"
-        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="17dp"
         android:onClick="onClick"
         android:text="@string/upgrades" />
+
+    <Button
+        android:id="@+id/buttonStats"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center"
+        android:layout_marginStart="33dp"
+        android:layout_marginBottom="13dp"
+        android:onClick="onClick"
+        android:text="@string/upgrades" />
+
 
 </RelativeLayout>

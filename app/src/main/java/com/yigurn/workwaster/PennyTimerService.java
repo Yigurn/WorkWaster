@@ -10,7 +10,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,7 +18,7 @@ public class PennyTimerService extends Service {
     private final IBinder binder = new LocalBinder();
     private ServiceCallbacks serviceCallbacks;
 
-    public class LocalBinder extends Binder {
+    class LocalBinder extends Binder {
         PennyTimerService getService() {
             // Return this instance of LocalService so clients can call public methods
             return PennyTimerService.this;

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AbsoluteLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/imgItem"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:background="@mipmap/ic_launcher"/>
+
+    <TextView
+        android:id="@+id/textName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_x="89dp"
+        android:layout_y="4dp"
+        android:text="00000"
+        android:textSize="28sp" />
+
+    <TextView
+        android:id="@+id/textDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_x="90dp"
+        android:layout_y="45dp"
+        android:text="00000"
+        android:textSize="20sp" />
+
+</AbsoluteLayout>
