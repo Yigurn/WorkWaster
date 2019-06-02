@@ -78,7 +78,7 @@ public class PennyTimerService extends Service {
                     screenOn = mPreferences.getBoolean("screenOn", true);
                     if (screenOn) {
                         mEditor.putLong("earned", ++earned);
-                        Log.i("pigs","Earned:" + earned);
+                        Log.i("pigs","(Service) Earned: " + earned);
                     }
                     //  if 9-5
                     //      if on app
