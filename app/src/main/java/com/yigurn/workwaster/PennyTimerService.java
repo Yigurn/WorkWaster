@@ -65,6 +65,14 @@ public class PennyTimerService extends Service {
         mTimer.scheduleAtFixedRate(new PennyTimeTimerTask(), 0, PENNY_INTERVAL);
 
     }
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i("EXIT", "onDestroy");
+        Intent broadcastIntent = new Intent(this, ScreenReceiver.class);
+
+        sendBroadcast(broadcastIntent);
+       // stopTimerTask();
+    }
     class PennyTimeTimerTask extends TimerTask {
 
         @Override
@@ -78,15 +86,13 @@ public class PennyTimerService extends Service {
                     screenOn = mPreferences.getBoolean("screenOn", true);
                     if (screenOn) {
                         mEditor.putLong("earned", ++earned);
-                        Log.i("pigs","(Service) Earned: " + earned);
-                    }
-                    //  if 9-5
-                    //      if on app
-                    //      drop
-                    mEditor.apply();
-                    if (serviceCallbacks != null) {
-                        serviceCallbacks.doSomething();
-                    }
+                        //Log.i("pigs", "(Service) Earned: " + earned);
+
+                            mEditor.apply();
+                            if (serviceCallbacks != null) {
+                                serviceCallbacks.doSomething();
+                            }
+                        }
                 }
             });
         }
