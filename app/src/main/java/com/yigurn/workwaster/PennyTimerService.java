@@ -15,86 +15,17 @@ import java.util.TimerTask;
 
 public class PennyTimerService extends Service {
 
-    private final IBinder binder = new LocalBinder();
-    private ServiceCallbacks serviceCallbacks;
-
-    class LocalBinder extends Binder {
-        PennyTimerService getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return PennyTimerService.this;
-        }
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return binder;
-    }
-
-    public void setCallbacks(ServiceCallbacks callbacks) {
-        serviceCallbacks = callbacks;
-    }
-
-    private SharedPreferences mPreferences;
-    private SharedPreferences.Editor mEditor;
-
-    //Interval time
-    public static final long PENNY_INTERVAL = (long) ((260 * 8 * 3600.0) / 29_000_00 * 1000);
-
-    private long earned;
-    public boolean screenOn;
-
-    //Run on a separate thread
-    private Handler mHandler = new Handler();
-    private Timer mTimer = null;
-
-    @Override
     public void onCreate() {
-        mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        super.onCreate();
 
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        ScreenReceiver mReceiver = new ScreenReceiver();
-        registerReceiver(mReceiver, intentFilter);
 
-        //cancel if exists
-        if (mTimer != null) {
-            mTimer.cancel();
-        } else {
-            mTimer = new Timer();
-        }
-        mTimer.scheduleAtFixedRate(new PennyTimeTimerTask(), 0, PENNY_INTERVAL);
-
+        ScreenReceiver receiver = new ScreenReceiver();
+        registerReceiver(receiver, intentFilter);
     }
-    public void onDestroy() {
-        super.onDestroy();
-        Log.i("EXIT", "onDestroy");
-        Intent broadcastIntent = new Intent(this, ScreenReceiver.class);
 
-        sendBroadcast(broadcastIntent);
-       // stopTimerTask();
-    }
-    class PennyTimeTimerTask extends TimerTask {
-
-        @Override
-        public void run() {
-            mHandler.post(new Runnable() {
-
-                @Override
-                public void run() {
-                    mEditor = mPreferences.edit();
-                    earned = mPreferences.getLong("earned", 0);
-                    screenOn = mPreferences.getBoolean("screenOn", true);
-                    if (screenOn) {
-                        mEditor.putLong("earned", ++earned);
-                        //Log.i("pigs", "(Service) Earned: " + earned);
-
-                            mEditor.apply();
-                            if (serviceCallbacks != null) {
-                                serviceCallbacks.doSomething();
-                            }
-                        }
-                }
-            });
-        }
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 }

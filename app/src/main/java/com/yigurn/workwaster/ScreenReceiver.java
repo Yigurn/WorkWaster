@@ -11,25 +11,28 @@ public class ScreenReceiver extends BroadcastReceiver {
 
     long startTime;
     long endTime;
-    long storedTime = 0;
+    long storedTime;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor mEditor = mPreferences.edit();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        storedTime = preferences.getLong("storedTime", 0);
         if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
-            mEditor.putBoolean("screenOn", true);
-            Log.i("pigs","SCREEN ON");
+            editor.putBoolean("screenOn", true);
             startTime = System.currentTimeMillis();
-            Log.i("pigs", Long.toString(startTime));
+            editor.putLong("startTime", startTime);
+            Log.i("pigs","SCREEN ON");
         } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-            mEditor.putBoolean("screenOn", false);
-            Log.i("pigs", "SCREEN OFF");
+            editor.putBoolean("screenOn", false);
+            startTime = preferences.getLong("startTime", System.currentTimeMillis());
             endTime = System.currentTimeMillis();
             storedTime += endTime - startTime;
-            Log.i("pigs", Long.toString(endTime));
-            Log.i("pigs", "Total Time: " + Long.toString(storedTime));
+            editor.putLong("endTime", endTime);
+            editor.putLong("storedTime", storedTime);
+            Log.i("pigs", "SCREEN OFF");
+            Log.i("pigs", "Stored Time: " + Long.toString(storedTime));
         }
-        mEditor.apply();
+        editor.apply();
     }
 }
